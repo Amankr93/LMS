@@ -3,7 +3,7 @@ import { User } from "../models/User.js";
 import Stripe from "stripe";
 import Purchase from "../models/Purchase.js";
 import Course from "../models/Course.js";
-import { getAuth } from "@clerk/express";
+
 
 export const clerkwebhook =async(req,res)=>{
     try{
@@ -77,7 +77,8 @@ export const stripeWebhooks = async( req,res)=>{
             console.log(session.data[0].metadata);
             console.log(typeof(purchaseId))
             const purchaseData = await Purchase.findById(purchaseId);
-            console.log(purchaseData);
+            const all = await Purchase.find();
+            console.log(all);
             const userData = await User.findById(purchaseData.userId);
             const courseData = await Course.findById(purchaseData.courseId);
             courseData.enrolledStudents.push(userData);
