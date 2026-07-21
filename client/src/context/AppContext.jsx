@@ -26,20 +26,20 @@ const calculateDuration = (course) => {
     return humanizeDuration(duration * 60 * 1000, { units: ["h", "m"] })
 
   }
-  
+
 
 
 }
 const calculateTotalLecture = (course) => {
-    if (course && Array.isArray(course.courseContent)) {
-      let lecture = 0;
-      course.courseContent.forEach((chapter) => lecture+=chapter.chapterContent.length)
-      return lecture;
-    }
-    // else{
-    //   let lecture=0;
-    // }
+  if (course && Array.isArray(course.courseContent)) {
+    let lecture = 0;
+    course.courseContent.forEach((chapter) => lecture += chapter.chapterContent.length)
+    return lecture;
   }
+  // else{
+  //   let lecture=0;
+  // }
+}
 export const AppContextProvider = (props) => {
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(true)
@@ -52,20 +52,22 @@ export const AppContextProvider = (props) => {
   const fetchEnrolledCourses = async () => {
     setEnrolledCourses(dummyCourses);
   }
-  const{getToken}= useAuth();
-   const {user} = useUser()
+  const { getToken } = useAuth();
+  const { user } = useUser();
+  useEffect(() => {
+    if (user) {
+      logToken()
+    }
+  }, [user])
+
   useEffect(() => {
     fetchAllCourses();
     fetchEnrolledCourses();
   }, [])
-  const logToken= async ()=>{
+  const logToken = async () => {
     console.log(await getToken())
   }
-  useEffect(()=>{
-    if(user){
-      logToken()
-    }
-  }, [user])
+
   const navigate = useNavigate();
   const currency = import.meta.env.VITE_CURRENCY;
   const value = { navigate, currency, calculateRating, allCourses, setAllCourses, allCourses, isEducator, setIsEducator, calculateDuration, calculateTotalLecture, enrolledCourses }
