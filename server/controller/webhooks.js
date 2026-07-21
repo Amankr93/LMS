@@ -3,6 +3,7 @@ import { User } from "../models/User.js";
 import Stripe from "stripe";
 import Purchase from "../models/Purchase.js";
 import Course from "../models/Course.js";
+import { getAuth } from "@clerk/express";
 
 export const clerkwebhook =async(req,res)=>{
     try{
@@ -53,6 +54,8 @@ export const clerkwebhook =async(req,res)=>{
 }
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const stripeWebhooks = async( req,res)=>{
+   console.log("webhook received");
+   
     const signature = req.headers['stripe-signature'];
 
     let event;
@@ -63,7 +66,7 @@ export const stripeWebhooks = async( req,res)=>{
     }
     switch(event.type){
         case 'payment_intent.succeeded':{
-            console.log("succceced")
+            
             const paymentIntent= event.data.object;
             const paymentIntentId  = paymentIntent.id;
             const session = await stripeInstance.checkout.sessions.list({
@@ -72,6 +75,8 @@ export const stripeWebhooks = async( req,res)=>{
             })
             const {purchaseId} = session.data[0].metadata;
             const purchaseData = await Purchase.findById(purchaseId);
+            console.log(purchaseData);
+           
             const userData = await User.findById(purchaseData.userId);
             const courseData = await Course.findById(purchaseData.courseId);
             courseData.enrolledStudents.push(userData);
@@ -80,12 +85,12 @@ export const stripeWebhooks = async( req,res)=>{
             await userData.save();
             purchaseData.status= 'completed';
             await purchaseData.save()
-            break;;
+            break;
 
 
         }
         case 'payment_intent.payment_failed':{
-            console.log("failed")
+        
 
             const paymentIntent= event.data.object;
             const paymentIntentId  = paymentIntent.id;
