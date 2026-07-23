@@ -94,9 +94,7 @@ const handleRate =async (rating) => {
 useEffect(()=>{
   getCourseProgress();
 })
-// useEffect(()=>{
-//    console.log(progressData)
-// },[progressData])
+
   return course ?(
     <div className=''>
 

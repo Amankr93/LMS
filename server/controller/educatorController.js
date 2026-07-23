@@ -6,7 +6,6 @@ import { User } from "../models/User.js";
 
 export const updateRoleToEducator = async (req, res) => {
     try {
-        console.log("accces", req.auth.userId);
         const { userId } = getAuth(req);
         await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata: {

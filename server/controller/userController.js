@@ -37,8 +37,6 @@ export const purchaseCourse = async (req,res) => {
         
         const {origin} = req.headers;
         const {userId} = getAuth(req);
-        console.log(userId, "user id");
-        
         const userData = await User.findById(userId);
         const courseData = await Course.findById(courseId);
         if(!courseData || !userData){

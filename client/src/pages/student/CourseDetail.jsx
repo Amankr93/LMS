@@ -38,13 +38,9 @@ const CourseDetail = () => {
       return toast.warning('Already enrolled in this course');
     }
     const token = await getToken();
-    console.log(backendUrl + '/api/user/purchase', course._id)
     const {data} = await axios.post(backendUrl + '/api/user/purchase', {courseId: course._id}, {headers:{Authorization:`Bearer ${token}`}});
-    
-    console.log(data, "purchase data");
     if(data.success){
       const {session_url} =data;
-      console.log(session_url, "session url");
       window.location.replace(session_url)
       
     }
