@@ -9,7 +9,7 @@ import Footer from '../../components/student/Footer'
 const CoursesList = () => {
   const {allCourses, navigate}=useContext(AppContext)
   const {input}= useParams();
-  console.log(input)
+ 
   const [filteredCourses, setFilteredCourses] = useState([])
   useEffect(()=>{
     if(input){
@@ -17,6 +17,7 @@ const CoursesList = () => {
     }
     else{
       setFilteredCourses(allCourses)
+    
     }
   }, [input, allCourses])
   // const filteredCourses= input? allCourses.filter((course)=>course.courseTitle.toLowerCase().includes(input.toLocaleLowerCase())): allCourses;
@@ -47,7 +48,7 @@ const CoursesList = () => {
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-10 mt-12 gap-5 px-20 sm:px-10  md:px-14 lg:px-36'>
         {
           filteredCourses.map((course, index)=>{
-           return < CourseCard course={course}/>
+           return < CourseCard course={course} key={index}/>
 
           })
         }

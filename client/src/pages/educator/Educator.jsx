@@ -4,6 +4,7 @@ import Navbar from '../../components/educator/Navbar'
 import Sidebar from '../../components/educator/Sidebar'
 
 const Educator = () => {
+  
   return (
     <div>
       <Navbar/>

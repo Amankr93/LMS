@@ -1,12 +1,17 @@
-import React, { act, useEffect, useRef, useState } from 'react'
+import React, { act, useContext, useEffect, useRef, useState } from 'react'
 import uniquid from 'uniquid'
 import Quill from 'quill'
 import { assets } from '../../assets/assets'
+import AppContext from '../../context/AppContext'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const AddCourse = () => {
+  const {backendUrl, getToken, navigate} = useContext(AppContext);
   const quillRef = useRef(null)
   const editorRef = useRef(null)
-  const [courseTitle, setCourseTitle] = useState('')
+  const [courseTitle, setCourseTitle] = useState('');
+  const [courseDescription, setCourseDescription] = useState('')
   const [discount, setDiscount] = useState(0)
   const [image, setImage] = useState(null)
   const [showPopup, setShowPopup] = useState(false)
@@ -81,7 +86,39 @@ const AddCourse = () => {
       });
   }
   const handleSubmit=async(e)=>{
-    e.preventDefault();
+    try {
+      e.preventDefault();
+      if(!image){
+        toast.error("Thumbnail not selected")
+      }
+      const courseData = {
+        courseTitle,
+        courseDescription:quillRef.current.root.innerHTML,
+        coursePrice:Number(coursePrice),
+        discount:Number(discount),
+        courseContent:chapters
+      }
+      const formData  = new FormData();
+      formData.append('courseData',JSON.stringify(courseData));
+      formData.append('image', image);
+      const token = await getToken();
+      const {data} = await axios.post(backendUrl + '/api/educator/add-course', formData, {headers:{Authorization:`Bearer ${token}`}})
+      if(data.success){
+        toast.success(data.message);
+        setCourseTitle('');
+        setCoursePrice(0);
+        setDiscount(0);
+        setImage(null);
+        setChapters([]);
+        quillRef.current.root.innerHTML=""
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+        toast.error(error.message)
+      
+    }
+    
   }
   useEffect(() => {
     // initiate quill only once
@@ -113,7 +150,7 @@ const AddCourse = () => {
             <label htmlFor="thumbnailImage" className='felx-col items-center gap-3'>
               <img src={assets.file_upload_icon} alt="" className='p-3 bg-blue-500 rounded ' />
               <input type="file" id="thumbnailImage" onChange={e => setImage(e.target.files[0])} accept='image/*' hidden />
-              <img src={image ? URL.createObjectURL(image) : ""} alt="" className='max-h-10' />
+              <img src={image ? URL.createObjectURL(image) : null} alt="" className='max-h-10' />
             </label>
           </div>
         </div>
@@ -125,7 +162,7 @@ const AddCourse = () => {
         <div>
           {
             chapters.map((chapter, chapterIndex) => (
-              <div className='border border-gray-500/50 rounded mb-2'>
+              <div className='border border-gray-500/50 rounded mb-2' key={chapterIndex}>
                 <div className='flex justify-between items-center p-4 border-b border-gray-500/50 rounded'>
                   <div className='flex items-center'>
                     <img src={assets.dropdown_icon} width={14} className={`mr-2 cursor-pointer transition-all ${chapter.collapsed && '-rotate-90'}`} alt=""
@@ -200,7 +237,7 @@ const AddCourse = () => {
             </div>
           )}
         </div>
-        <button type='submit' className='bg-black text-white py-2.5 px-8 rounded my-4'>ADD</button>
+        <button type='submit' className='bg-black text-white py-2.5 px-8 rounded my-4' onClick={()=>navigate('/educator/my-courses')}>ADD</button>
       </form>
 
     </div>

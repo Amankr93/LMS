@@ -3,6 +3,7 @@ import { User } from "../models/User.js";
 import Purchase from "../models/Purchase.js";
 import Course from "../models/Course.js";
 import Stripe from "stripe";
+import CourseProgress from "../models/CourseProgress.js";
 
 export const getUserData = async (req, res) => {
     try {
@@ -65,8 +66,8 @@ export const purchaseCourse = async (req,res) => {
         }]
         // initialize stripe instance
         const session  = await stripeInstance.checkout.sessions.create({
-            success_url:`${origin}loading/my-enrollments`,
-            cancel_url:`${origin}`,
+            success_url:`${origin}/loading/my-enrollments`,
+            cancel_url:`${origin}/`,
             line_items,
             mode:'payment',
             metadata:{
@@ -127,11 +128,11 @@ export const addUserRating = async (req,res) => {
         if(!user || !user.enrolledCourses.includes(courseId)){
             return res.json({success:false, message:"User has not purchased this course"})
         }
-        const existingRatingIndex = course.courseRating.findIndex(r => r.userId.toString() === userId);
+        const existingRatingIndex = course.courseRatings.findIndex(r => r.userId.toString() === userId);
         if(existingRatingIndex !== -1){
-            course.courseRating[existingRatingIndex].rating = rating;
+            course.courseRatings[existingRatingIndex].rating = rating;
         }else{
-            course.courseRating.push({userId, rating});
+            course.courseRatings.push({userId, rating});
         }
         await course.save();
         return res.json({success:true, message:"Rating added successfully"})

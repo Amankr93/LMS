@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes, useMatch } from 'react-router-dom'
+import { Route, Routes, useLocation, useMatch } from 'react-router-dom'
 import Home from './pages/student/Home'
 import CoursesList from './pages/student/CoursesList'
 import CourseDetail from './pages/student/CourseDetail'
@@ -13,11 +13,14 @@ import StudentEnrolled from './pages/educator/StudentEnrolled'
 import Loading from './components/student/Loading'
 import Navbar from './components/student/Navbar'
 import 'quill/dist/quill.snow.css'
+import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
-  const isEducatorRoute = location.pathname.includes("/educator");
+  const location = useLocation();
+  const isEducatorRoute = location.pathname.startsWith('/educator')
   return (
-    <div>
+    <div className='text-default min-h-screen bg-white'>
+      <ToastContainer/>
       {!isEducatorRoute && <Navbar/>}
 
       

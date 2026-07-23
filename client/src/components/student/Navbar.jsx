@@ -4,13 +4,36 @@ import {assets} from '../../assets/assets.js'
 import { User, X } from "lucide-react"
 import { SignInButton, useClerk, UserButton, useUser } from '@clerk/react';
 import AppContext from '../../context/AppContext.jsx';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const isCOurseListPage = location.pathname.includes("course-list");
 
   const { openSignIn } = useClerk();
   const { user } = useUser();
-  const {navigate, isEducator}= useContext(AppContext)
+  const {navigate, isEducator, backendUrl, setIsEducator, getToken}= useContext(AppContext);
+  const becomeEducator = async () => {
+    try {
+      if(isEducator){
+        navigate('/educator');
+        return;
+      }
+      console.log("not en educator")
+      const token = await getToken();
+      const {data} = await axios.get(backendUrl + '/api/educator/update-role', {headers:{Authorization:`Bearer ${token}`}});
+      if(data.success){
+        setIsEducator(true);
+        toast.success(data.message);
+      }else{
+        toast.error(data.message)
+
+      }
+    } catch (error) {
+      toast.error(error.message)
+      
+    }
+  }
   return (
     <div className={`flex justify-between items-center px-4 sm:px-10 md:px-14 lg:px-36 py-4 border-b border-gray-500 ${isCOurseListPage ? 'bg-white' : 'bg-cyan-100/70'}`} >
       <Link to={"/"}>
@@ -21,7 +44,7 @@ const Navbar = () => {
         <div className='flex gap-5 items-center' >
           {
             user && <>
-              <button onClick={()=>{navigate('/educator')}}>{isEducator? 'Educator-Dashboard': 'Become Educator'}</button>
+              <button onClick={becomeEducator}>{isEducator? 'Educator-Dashboard': 'Become Educator'}</button>
               <Link to="/my-enrollments">My Enrollments</Link>
             </>
           }
@@ -38,7 +61,7 @@ const Navbar = () => {
         <div className=' flex gap-2 sm:gap-2 items-center max-sm:text-xs '>
           {
             user && <>
-              <button className='text-sm' onClick={()=>{navigate('/educator')}}>{isEducator? 'Educator-Dashboard': 'Become Educator'}</button>
+              <button className='text-sm' onClick={becomeEducator}>{isEducator? 'Educator-Dashboard': 'Become Educator'}</button>
               <Link className='text-sm'  to="/my-enrollments">My Enrollments</Link>
             </>
           }

@@ -2,16 +2,31 @@ import React, { useContext, useEffect, useState } from 'react'
 import { assets, dummyDashboardData } from '../../assets/assets'
 import Loading from '../../components/student/Loading'
 import AppContext from '../../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const Dashboard = () => {
-  const {currency}= useContext(AppContext)
+  const {currency, backendUrl, isEducator, getToken}= useContext(AppContext)
   const [dashboardData, setDashboardData] = useState(null)
-  const fetchDashboardData = () => {
-    setDashboardData(dummyDashboardData)
+  const fetchDashboardData = async() => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(backendUrl + '/api/educator/dashboard', { headers: { Authorization: `Bearer ${token}` } })
+      if(data.success){
+        setDashboardData(data.dashboardData)
+      }else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
   useEffect(() => {
-    fetchDashboardData();
-  }, [])
+    if(isEducator){
+      fetchDashboardData();
+    }
+    
+  }, [isEducator])
   return dashboardData ? (
     <div className='flex flex-col p-4 items-start justify-between md:p-8 md:pb-0 pt-8 pb-0'>
       <div className='flex flex-wrap gap-5 items-center '>
@@ -52,7 +67,7 @@ const Dashboard = () => {
             <tbody className='text-gray-500'>
               {
                 dashboardData.enrolledStudentsData.map((item, index) => (
-                  <tr className='border-b border-gray-500/20 '>
+                  <tr className='border-b border-gray-500/20 ' key={index}>
                     <td className='hidden md:table-cell px-4 py-3'>
                       {index+1}
 
