@@ -99,12 +99,9 @@ export const AppContextProvider = (props) => {
     if(data.success){
       setEnrolledCourses(data.enrolledCourses.reverse())
     }else{
-      console.log("error from else of fetchEnrolledCoursefunction  appContext")
       toast.error(data.message);
     }
     } catch (error) {
-      console.log("error from error of fetchEnrolledCoursefunction  appContext")
-
       toast.error(error.message)
     }
     
@@ -113,19 +110,13 @@ export const AppContextProvider = (props) => {
   useEffect(() => {
     if (user) {
       fetchUserData();
-      fetchEnrolledCourses()
-
+      fetchEnrolledCourses();
     }
   }, [user])
 
   useEffect(() => {
-    
     fetchAllCourses();
-    fetchEnrolledCourses();
   }, [])
-  
-
-
   const value = { navigate, currency, calculateRating, allCourses, setAllCourses, allCourses, isEducator, setIsEducator, calculateDuration, calculateTotalLecture, enrolledCourses ,backendUrl, userData, fetchAllCourses,setUserData, getToken, fetchEnrolledCourses, fetchUserData}
   return (
 
