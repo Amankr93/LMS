@@ -68,8 +68,7 @@ export const AppContextProvider = (props) => {
       toast.error(error.message)
 
     }
-    // const { data } = await axios.get('http://localhost:5000/api/course/all');
-    // console.log(data)
+    
   }
   // fetch user data
   const fetchUserData = async()=>{
@@ -100,9 +99,12 @@ export const AppContextProvider = (props) => {
     if(data.success){
       setEnrolledCourses(data.enrolledCourses.reverse())
     }else{
+      console.log("error from else of fetchEnrolledCoursefunction  appContext")
       toast.error(data.message);
     }
     } catch (error) {
+      console.log("error from error of fetchEnrolledCoursefunction  appContext")
+
       toast.error(error.message)
     }
     
